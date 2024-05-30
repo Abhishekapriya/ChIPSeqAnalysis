@@ -1,0 +1,391 @@
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("consensusSeekeR")
+library(consensusSeekeR)
+
+
+
+```{r}
+library(consensusSeekeR)
+library(rtracklayer)
+library(GenomicRanges)
+library(GenomeInfoDb)
+
+### Get the information for mm10
+mm10Info <- Seqinfo(genome="mm10")
+```
+
+
+```{r}
+setwd("E:/MS/Project_Work/Data/NarrowPeaks/CEBPA")
+
+file_CEPBA_ChIP1_01 <- "CEBPA_ChIP1_01.narrowPeak"
+CEPBA_ChIP1_01 <- readNarrowPeakFile(file_CEPBA_ChIP1_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_CEPBA_ChIP1_02 <- "CEBPA_ChIP1_02.narrowPeak"
+CEPBA_ChIP1_02 <- readNarrowPeakFile(file_CEPBA_ChIP1_02, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_CEPBA_ChIP1_03 <- "CEBPA_ChIP1_03.narrowPeak"
+CEPBA_ChIP1_03 <- readNarrowPeakFile(file_CEPBA_ChIP1_03, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_CEPBA_ChIP2_01 <- "CEBPA_ChIP2_01.narrowPeak"
+CEPBA_ChIP2_01 <- readNarrowPeakFile(file_CEPBA_ChIP2_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_CEPBA_ChIP2_02 <- "CEBPA_ChIP2_02.narrowPeak"
+CEPBA_ChIP2_02 <- readNarrowPeakFile(file_CEPBA_ChIP2_02, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_CEPBA_ChIP2_03 <- "CEBPA_ChIP2_03.narrowPeak"
+CEPBA_ChIP2_03 <- readNarrowPeakFile(file_CEPBA_ChIP2_03, extractRegions = TRUE, extractPeaks = TRUE)
+
+
+### Assigning experiment to each replicate
+names(CEPBA_ChIP1_01$narrowPeak) <- rep("rep01", length(CEPBA_ChIP1_01$narrowPeak))
+names(CEPBA_ChIP1_01$peak) <- rep("rep01", length(CEPBA_ChIP1_01$peak))
+
+names(CEPBA_ChIP1_02$narrowPeak) <- rep("rep02", length(CEPBA_ChIP1_02$narrowPeak))
+names(CEPBA_ChIP1_02$peak) <- rep("rep02", length(CEPBA_ChIP1_02$peak))
+
+names(CEPBA_ChIP1_03$narrowPeak) <- rep("rep03", length(CEPBA_ChIP1_03$narrowPeak))
+names(CEPBA_ChIP1_03$peak) <- rep("rep03", length(CEPBA_ChIP1_03$peak))
+
+names(CEPBA_ChIP2_01$narrowPeak) <- rep("rep04", length(CEPBA_ChIP2_01$narrowPeak))
+names(CEPBA_ChIP2_01$peak) <- rep("rep04", length(CEPBA_ChIP2_01$peak))
+
+names(CEPBA_ChIP2_02$narrowPeak) <- rep("rep05", length(CEPBA_ChIP2_02$narrowPeak))
+names(CEPBA_ChIP2_02$peak) <- rep("rep05", length(CEPBA_ChIP2_02$peak))
+
+names(CEPBA_ChIP2_03$narrowPeak) <- rep("rep06", length(CEPBA_ChIP2_03$narrowPeak))
+names(CEPBA_ChIP2_03$peak) <- rep("rep06", length(CEPBA_ChIP2_03$peak))
+
+
+### Find consensus regions with the replicates inside it
+CEBPA <- findConsensusPeakRegions(
+  narrowPeaks = c(CEPBA_ChIP1_01$narrowPeak, CEPBA_ChIP1_02$narrowPeak, CEPBA_ChIP1_03$narrowPeak, CEPBA_ChIP2_01$narrowPeak, CEPBA_ChIP2_02$narrowPeak, CEPBA_ChIP2_03$narrowPeak),
+  peaks = c(CEPBA_ChIP1_01$peak, CEPBA_ChIP1_02$peak, CEPBA_ChIP1_03$peak, CEPBA_ChIP2_01$peak, CEPBA_ChIP2_02$peak, CEPBA_ChIP2_03$peak),
+  chrInfo = mm10Info,
+  extendingSize = 200,
+  expandToFitPeakRegion = F,
+  shrinkToFitPeakRegion = T,
+  minNbrExp = 4,
+  nbrThreads = 1)
+write.table(CEBPA$consensusRanges, "E:/MS/Project_Work/Data/NarrowPeaks/CEBPA/CEBPA.bed", quote = F,row.names = F, sep = "\t")
+```
+
+```{r}
+setwd("E:/MS/Project_Work/Data/NarrowPeaks/CTCF")
+
+file_CTCF_ChIP1_01 <- "CTCF_ChIP1_01.narrowPeak"
+CTCF_ChIP1_01 <- readNarrowPeakFile(file_CTCF_ChIP1_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_CTCF_ChIP2_01 <- "CTCF_ChIP2_01.narrowPeak"
+CTCF_ChIP2_01 <- readNarrowPeakFile(file_CTCF_ChIP2_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+### Assigning experiment to each replicate
+
+names(CTCF_ChIP1_01$narrowPeak) <- rep("rep01", length(CTCF_ChIP1_01$narrowPeak))
+names(CTCF_ChIP1_01$peak) <- rep("rep01", length(CTCF_ChIP1_01$peak))
+
+names(CTCF_ChIP2_01$narrowPeak) <- rep("rep02", length(CTCF_ChIP2_01$narrowPeak))
+names(CTCF_ChIP2_01$peak) <- rep("rep02", length(CTCF_ChIP2_01$peak))
+
+
+### Find consensus regions with the replicates inside it
+CTCF <- findConsensusPeakRegions(
+  narrowPeaks = c(CTCF_ChIP1_01$narrowPeak, CTCF_ChIP2_01$narrowPeak),
+  peaks = c(CTCF_ChIP1_01$peak, CTCF_ChIP2_01$peak),
+  chrInfo = mm10Info,
+  extendingSize = 200,
+  expandToFitPeakRegion = F,
+  shrinkToFitPeakRegion = T,
+  minNbrExp = 2,
+  nbrThreads = 1)
+write.table(CTCF$consensusRanges, "E:/MS/Project_Work/Data/NarrowPeaks/CTCF/CTCF.bed", quote = F,row.names = F, sep = "\t")
+
+```
+
+```{r}
+setwd("E:/MS/Project_Work/Data/NarrowPeaks/FOXa1")
+
+file_FOXa1_ChIP1_01 <- "FOXa1_ChIP1_01.narrowPeak"
+FOXa1_ChIP1_01 <- readNarrowPeakFile(file_FOXa1_ChIP1_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_FOXa1_ChIP2_01 <- "FOXa1_ChIP2_01.narrowPeak"
+FOXa1_ChIP2_01 <- readNarrowPeakFile(file_FOXa1_ChIP2_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+### Assigning experiment to each replicate
+
+names(FOXa1_ChIP1_01$narrowPeak) <- rep("rep01", length(FOXa1_ChIP1_01$narrowPeak))
+names(FOXa1_ChIP1_01$peak) <- rep("rep01", length(FOXa1_ChIP1_01$peak))
+
+names(FOXa1_ChIP2_01$narrowPeak) <- rep("rep02", length(FOXa1_ChIP2_01$narrowPeak))
+names(FOXa1_ChIP2_01$peak) <- rep("rep02", length(FOXa1_ChIP2_01$peak))
+
+
+### Find consensus regions with the replicates inside it
+FOXa1 <- findConsensusPeakRegions(
+  narrowPeaks = c(FOXa1_ChIP1_01$narrowPeak, FOXa1_ChIP2_01$narrowPeak),
+  peaks = c(FOXa1_ChIP1_01$peak, FOXa1_ChIP2_01$peak),
+  chrInfo = mm10Info,
+  extendingSize = 200,
+  expandToFitPeakRegion = F,
+  shrinkToFitPeakRegion = T,
+  minNbrExp = 2,
+  nbrThreads = 1)
+write.table(FOXa1$consensusRanges, "E:/MS/Project_Work/Data/NarrowPeaks/FOXa1/FOXa1.bed", quote = F,row.names = F, sep = "\t")
+```
+
+```{r}
+setwd("E:/MS/Project_Work/Data/NarrowPeaks/FOXa2")
+
+file_FOXa2_ChIP1_02 <- "FOXa2_ChIP1_02.narrowPeak"
+FOXa2_ChIP1_02 <- readNarrowPeakFile(file_FOXa2_ChIP1_02, extractRegions = TRUE, extractPeaks = TRUE)
+file_FOXa2_ChIP1_03 <- "FOXa2_ChIP1_03.narrowPeak"
+FOXa2_ChIP1_03 <- readNarrowPeakFile(file_FOXa2_ChIP1_03, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_FOXa2_ChIP2_01 <- "FOXa2_ChIP2_01.narrowPeak"
+FOXa2_ChIP2_01 <- readNarrowPeakFile(file_FOXa2_ChIP2_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+### Assigning experiment to each replicate
+
+names(FOXa2_ChIP1_02$narrowPeak) <- rep("rep01", length(FOXa2_ChIP1_02$narrowPeak))
+names(FOXa2_ChIP1_02$peak) <- rep("rep01", length(FOXa2_ChIP1_02$peak))
+names(FOXa2_ChIP1_03$narrowPeak) <- rep("rep02", length(FOXa2_ChIP1_03$narrowPeak))
+names(FOXa2_ChIP1_03$peak) <- rep("rep02", length(FOXa2_ChIP1_03$peak))
+
+
+names(FOXa2_ChIP2_01$narrowPeak) <- rep("rep03", length(FOXa2_ChIP2_01$narrowPeak))
+names(FOXa2_ChIP2_01$peak) <- rep("rep03", length(FOXa2_ChIP2_01$peak))
+
+
+### Find consensus regions with the replicates inside it
+FOXa2 <- findConsensusPeakRegions(
+  narrowPeaks = c(FOXa2_ChIP1_02$narrowPeak,FOXa2_ChIP1_03$narrowPeak,FOXa2_ChIP2_01$narrowPeak),
+  peaks = c(FOXa2_ChIP1_02$peak, FOXa2_ChIP1_03$peak, FOXa2_ChIP2_01$peak),
+  chrInfo = mm10Info,
+  extendingSize = 200,
+  expandToFitPeakRegion = F,
+  shrinkToFitPeakRegion = T,
+  minNbrExp = 2,
+  nbrThreads = 1)
+write.table(FOXa2$consensusRanges, "E:/MS/Project_Work/Data/NarrowPeaks/FOXa2/FOXa2.bed", quote = F,row.names = F, sep = "\t")
+```
+
+
+```{r}
+setwd("E:/MS/Project_Work/Data/NarrowPeaks/GABPA")
+
+file_GABPA_ChIP1_01 <- "GABPA_ChIP1_01.narrowPeak"
+GABPA_ChIP1_01 <- readNarrowPeakFile(file_GABPA_ChIP1_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_GABPA_ChIP1_02 <- "GABPA_ChIP1_02.narrowPeak"
+GABPA_ChIP1_02 <- readNarrowPeakFile(file_GABPA_ChIP1_02, extractRegions = TRUE, extractPeaks = TRUE)
+
+### Assigning experiment to each replicate
+
+names(GABPA_ChIP1_01$narrowPeak) <- rep("rep01", length(GABPA_ChIP1_01$narrowPeak))
+names(GABPA_ChIP1_01$peak) <- rep("rep01", length(GABPA_ChIP1_01$peak))
+
+names(GABPA_ChIP1_02$narrowPeak) <- rep("rep02", length(GABPA_ChIP1_02$narrowPeak))
+names(GABPA_ChIP1_02$peak) <- rep("rep02", length(GABPA_ChIP1_02$peak))
+
+
+### Find consensus regions with the replicates inside it
+GABPA <- findConsensusPeakRegions(
+  narrowPeaks = c(GABPA_ChIP1_01$narrowPeak, GABPA_ChIP1_02$narrowPeak),
+  peaks = c(GABPA_ChIP1_01$peak, GABPA_ChIP1_02$peak),
+  chrInfo = mm10Info,
+  extendingSize = 200,
+  expandToFitPeakRegion = F,
+  shrinkToFitPeakRegion = T,
+  minNbrExp = 2,
+  nbrThreads = 1)
+write.table(GABPA$consensusRanges, "E:/MS/Project_Work/Data/NarrowPeaks/GABPA/GABPA.bed", quote = F,row.names = F, sep = "\t")
+```
+
+```{r}
+setwd("E:/MS/Project_Work/Data/NarrowPeaks/HNF1a")
+
+file_HNF1a_01 <- "HNF1a_01.narrowPeak"
+HNF1a_01 <- readNarrowPeakFile(file_HNF1a_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_HNF1a_02 <- "HNF1a_02.narrowPeak"
+HNF1a_02 <- readNarrowPeakFile(file_HNF1a_02, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_HNF1a_03 <- "HNF1a_03.narrowPeak"
+HNF1a_03 <- readNarrowPeakFile(file_HNF1a_03, extractRegions = TRUE, extractPeaks = TRUE)
+
+
+### Assigning experiment to each replicate
+names(HNF1a_01$narrowPeak) <- rep("rep01", length(HNF1a_01$narrowPeak))
+names(HNF1a_01$peak) <- rep("rep01", length(HNF1a_01$peak))
+
+names(HNF1a_02$narrowPeak) <- rep("rep02", length(HNF1a_02$narrowPeak))
+names(HNF1a_02$peak) <- rep("rep02", length(HNF1a_02$peak))
+
+names(HNF1a_03$narrowPeak) <- rep("rep03", length(HNF1a_03$narrowPeak))
+names(HNF1a_03$peak) <- rep("rep03", length(HNF1a_03$peak))
+
+
+### Find consensus regions with the replicates inside it
+HNF1a <- findConsensusPeakRegions(
+  narrowPeaks = c(HNF1a_01$narrowPeak, HNF1a_02$narrowPeak, HNF1a_03$narrowPeak),
+  peaks = c(HNF1a_01$peak, HNF1a_02$peak, HNF1a_03$peak),
+  chrInfo = mm10Info,
+  extendingSize = 200,
+  expandToFitPeakRegion = F,
+  shrinkToFitPeakRegion = T,
+  minNbrExp = 2,
+  nbrThreads = 1)
+write.table(HNF1a$consensusRanges, "E:/MS/Project_Work/Data/NarrowPeaks/HNF1a/HNF1a.bed", quote = F,row.names = F, sep = "\t")
+```
+
+```{r}
+setwd("E:/MS/Project_Work/Data/NarrowPeaks/HNF4a")
+
+file_HNF4a_01 <- "HNF4a_01.narrowPeak"
+HNF4a_01 <- readNarrowPeakFile(file_HNF4a_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_HNF4a_02 <- "HNF4a_02.narrowPeak"
+HNF4a_02 <- readNarrowPeakFile(file_HNF4a_02, extractRegions = TRUE, extractPeaks = TRUE)
+
+
+### Assigning experiment to each replicate
+names(HNF4a_01$narrowPeak) <- rep("rep01", length(HNF4a_01$narrowPeak))
+names(HNF4a_01$peak) <- rep("rep01", length(HNF4a_01$peak))
+
+names(HNF4a_02$narrowPeak) <- rep("rep02", length(HNF4a_02$narrowPeak))
+names(HNF4a_02$peak) <- rep("rep02", length(HNF4a_02$peak))
+
+
+### Find consensus regions with the replicates inside it
+HNF4a <- findConsensusPeakRegions(
+  narrowPeaks = c(HNF4a_01$narrowPeak, HNF4a_02$narrowPeak),
+  peaks = c(HNF4a_01$peak, HNF4a_02$peak),
+  chrInfo = mm10Info,
+  extendingSize = 200,
+  expandToFitPeakRegion = F,
+  shrinkToFitPeakRegion = T,
+  minNbrExp = 2,
+  nbrThreads = 1)
+write.table(HNF4a$consensusRanges, "E:/MS/Project_Work/Data/NarrowPeaks/HNF4a/HNF4a.bed", quote = F,row.names = F, sep = "\t")
+```
+
+```{r}
+setwd("E:/MS/Project_Work/Data/NarrowPeaks/HNF6")
+
+file_HNF6_ChIP1_01 <- "HNF6_ChIP1_01.narrowPeak"
+HNF6_ChIP1_01 <- readNarrowPeakFile(file_HNF6_ChIP1_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_HNF6_ChIP1_02 <- "HNF6_ChIP1_02.narrowPeak"
+HNF6_ChIP1_02 <- readNarrowPeakFile(file_HNF6_ChIP1_02, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_HNF6_ChIP1_03 <- "HNF6_ChIP1_03.narrowPeak"
+HNF6_ChIP1_03 <- readNarrowPeakFile(file_HNF6_ChIP1_03, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_HNF6_ChIP2_01 <- "HNF6_ChIP2_01.narrowPeak"
+HNF6_ChIP2_01 <- readNarrowPeakFile(file_HNF6_ChIP2_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_HNF6_ChIP2_02 <- "HNF6_ChIP2_02.narrowPeak"
+HNF6_ChIP2_02 <- readNarrowPeakFile(file_HNF6_ChIP2_02, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_HNF6_ChIP2_03 <- "HNF6_ChIP2_03.narrowPeak"
+HNF6_ChIP2_03 <- readNarrowPeakFile(file_HNF6_ChIP2_03, extractRegions = TRUE, extractPeaks = TRUE)
+
+
+### Assigning experiment to each replicate
+names(HNF6_ChIP1_01$narrowPeak) <- rep("rep01", length(HNF6_ChIP1_01$narrowPeak))
+names(HNF6_ChIP1_01$peak) <- rep("rep01", length(HNF6_ChIP1_01$peak))
+
+names(HNF6_ChIP1_02$narrowPeak) <- rep("rep02", length(HNF6_ChIP1_02$narrowPeak))
+names(HNF6_ChIP1_02$peak) <- rep("rep02", length(HNF6_ChIP1_02$peak))
+
+names(HNF6_ChIP1_03$narrowPeak) <- rep("rep03", length(HNF6_ChIP1_03$narrowPeak))
+names(HNF6_ChIP1_03$peak) <- rep("rep03", length(HNF6_ChIP1_03$peak))
+
+names(HNF6_ChIP2_01$narrowPeak) <- rep("rep04", length(HNF6_ChIP2_01$narrowPeak))
+names(HNF6_ChIP2_01$peak) <- rep("rep04", length(HNF6_ChIP2_01$peak))
+
+names(HNF6_ChIP2_02$narrowPeak) <- rep("rep05", length(HNF6_ChIP2_02$narrowPeak))
+names(HNF6_ChIP2_02$peak) <- rep("rep05", length(HNF6_ChIP2_02$peak))
+
+names(HNF6_ChIP2_03$narrowPeak) <- rep("rep06", length(HNF6_ChIP2_03$narrowPeak))
+names(HNF6_ChIP2_03$peak) <- rep("rep06", length(HNF6_ChIP2_03$peak))
+
+
+### Find consensus regions with the replicates inside it
+HNF6 <- findConsensusPeakRegions(
+  narrowPeaks = c(HNF6_ChIP1_01$narrowPeak, HNF6_ChIP1_02$narrowPeak, HNF6_ChIP1_03$narrowPeak, HNF6_ChIP2_01$narrowPeak, HNF6_ChIP2_02$narrowPeak, HNF6_ChIP2_03$narrowPeak),
+  peaks = c(HNF6_ChIP1_01$peak, HNF6_ChIP1_02$peak, HNF6_ChIP1_03$peak, HNF6_ChIP2_01$peak, HNF6_ChIP2_02$peak, HNF6_ChIP2_03$peak),
+  chrInfo = mm10Info,
+  extendingSize = 200,
+  expandToFitPeakRegion = F,
+  shrinkToFitPeakRegion = T,
+  minNbrExp = 4,
+  nbrThreads = 1)
+write.table(HNF6$consensusRanges, "E:/MS/Project_Work/Data/NarrowPeaks/HNF6/HNF6.bed", quote = F,row.names = F, sep = "\t")
+```
+
+```{r}
+setwd("E:/MS/Project_Work/Data/NarrowPeaks/p300")
+
+file_p300_ChIP1_01 <- "p300_ChIP1_01.narrowPeak"
+p300_ChIP1_01 <- readNarrowPeakFile(file_p300_ChIP1_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_p300_ChIP2_01 <- "p300_ChIP2_01.narrowPeak"
+p300_ChIP2_01 <- readNarrowPeakFile(file_p300_ChIP2_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+### Assigning experiment to each replicate
+
+names(p300_ChIP1_01$narrowPeak) <- rep("rep01", length(p300_ChIP1_01$narrowPeak))
+names(p300_ChIP1_01$peak) <- rep("rep01", length(p300_ChIP1_01$peak))
+
+names(p300_ChIP2_01$narrowPeak) <- rep("rep02", length(p300_ChIP2_01$narrowPeak))
+names(p300_ChIP2_01$peak) <- rep("rep02", length(p300_ChIP2_01$peak))
+
+
+### Find consensus regions with the replicates inside it
+p300 <- findConsensusPeakRegions(
+  narrowPeaks = c(p300_ChIP1_01$narrowPeak, p300_ChIP2_01$narrowPeak),
+  peaks = c(p300_ChIP1_01$peak, p300_ChIP2_01$peak),
+  chrInfo = mm10Info,
+  extendingSize = 200,
+  expandToFitPeakRegion = F,
+  shrinkToFitPeakRegion = T,
+  minNbrExp = 2,
+  nbrThreads = 1)
+write.table(p300$consensusRanges, "E:/MS/Project_Work/Data/NarrowPeaks/p300/p300.bed", quote = F,row.names = F, sep = "\t")
+```
+
+```{r}
+setwd("E:/MS/Project_Work/Data/NarrowPeaks/STAG1")
+
+file_STAG1_ChIP1_01 <- "STAG1_ChIP1_01.narrowPeak"
+STAG1_ChIP1_01 <- readNarrowPeakFile(file_STAG1_ChIP1_01, extractRegions = TRUE, extractPeaks = TRUE)
+
+file_STAG1_ChIP1_02 <- "STAG1_ChIP1_02.narrowPeak"
+STAG1_ChIP1_02 <- readNarrowPeakFile(file_STAG1_ChIP1_02, extractRegions = TRUE, extractPeaks = TRUE)
+
+### Assigning experiment to each replicate
+
+names(STAG1_ChIP1_01$narrowPeak) <- rep("rep01", length(STAG1_ChIP1_01$narrowPeak))
+names(STAG1_ChIP1_01$peak) <- rep("rep01", length(STAG1_ChIP1_01$peak))
+
+names(STAG1_ChIP1_02$narrowPeak) <- rep("rep02", length(STAG1_ChIP1_02$narrowPeak))
+names(STAG1_ChIP1_02$peak) <- rep("rep02", length(STAG1_ChIP1_02$peak))
+
+
+### Find consensus regions with the replicates inside it
+STAG1 <- findConsensusPeakRegions(
+  narrowPeaks = c(STAG1_ChIP1_01$narrowPeak, STAG1_ChIP1_02$narrowPeak),
+  peaks = c(STAG1_ChIP1_01$peak, STAG1_ChIP1_02$peak),
+  chrInfo = mm10Info,
+  extendingSize = 200,
+  expandToFitPeakRegion = F,
+  shrinkToFitPeakRegion = T,
+  minNbrExp = 2,
+  nbrThreads = 1)
+write.table(STAG1$consensusRanges, "E:/MS/Project_Work/Data/NarrowPeaks/STAG1/STAG1.bed", quote = F,row.names = F, sep = "\t")
+```
+
+
