@@ -1,0 +1,32 @@
+#load txt
+```{r}
+library(dplyr)
+my_file <- read.delim("E:/MS/Project_Work/Data/Factors/Factors_Treatment_2.txt")
+my_file
+```
+#Load packages
+```{r}
+library(ggplot2)
+```
+
+#Plotting
+```{r}
+ggplot(my_file, 
+       aes(x = Factor, y = Number, fill = Location, label = Number)) +
+  geom_bar(stat='identity', position = position_dodge()) +
+  facet_grid(rows = "Treatment") +
+  scale_fill_brewer(palette = "Paired")+
+  theme_bw()
+
+  #geom_text(position = position_stack(vjust = 0.5))
+```
+```{r}
+ggplot(my_file, 
+       aes(x = Factor, y = Number, fill = Location, label = Number)) +
+  geom_bar(stat='identity', position = position_stack()) +
+  facet_grid(rows = "Treatment") +
+  scale_fill_brewer(palette = "Paired")+
+  theme_bw()
+
+  #geom_text(position = position_stack(vjust = 0.5))
+```
