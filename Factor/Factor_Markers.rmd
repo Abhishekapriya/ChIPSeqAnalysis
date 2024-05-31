@@ -1,0 +1,20 @@
+```{r}
+library(dplyr)
+my_file <- read.delim("E:/MS/Project_Work/Data/Factors_Markers/Factor_Markers.txt")
+my_file
+```
+#Load packages
+```{r}
+library(ggplot2)
+```
+
+#Plotting
+```{r}
+ggplot(my_file, 
+       aes(x = Factor, y = Number.of.Peaks, fill = Peak.Type, label = Number.of.Peaks)) +
+  geom_bar(stat='identity', position = position_dodge())+
+  facet_grid(rows = "Location") +
+  scale_fill_brewer(palette = "Pastel1")
+  theme_bw()
+
+```

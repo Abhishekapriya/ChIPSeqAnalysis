@@ -1,0 +1,164 @@
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+all_enhancer <- read.delim("Gene_Enhancer_sorted.bed", header=F) %>% select(2,8)
+
+colnames(all_enhancer) <- c("peak_feature", "distance")
+
+all_enhancer$distance <- (abs(all_enhancer$distance)/1000)+1
+
+all_enhancer$distance <- round(all_enhancer$distance,digits=3)
+```
+
+```{r}
+ggplot(all_enhancer, aes(y=log10(distance))) +
+  geom_freqpoly(bins=50)+
+  coord_flip()+ 
+  theme_bw()+
+  ylab("distance to TSS, log10")
+```
+
+
+
+```{r}
+ggplot(all_enhancer, aes(y=log10(distance))) +
+  geom_histogram(aes(x = (..count..)/sum(..count..)),bins=75)+
+  coord_flip()+ 
+  theme_bw()+
+  ylab("distance to TSS, log10")
+```
+
+```{r}
+indx <- is.na(all_enhancer))
+indx
+grep("TRUE", indx)
+```
+
+
+```{r}
+all_promoter <- read.delim("Gene_Promoter_sorted.bed", header=F) %>% select(2,8)
+
+colnames(all_promoter) <- c("peak_feature", "distance")
+
+all_promoter$distance <- (abs(all_promoter$distance)+1)
+
+all_promoter$distance <- round(all_promoter$distance,digits=3)
+```
+
+
+```{r}
+ggplot(all_promoter, aes(y=log10(distance))) +
+  geom_freqpoly(bins=50)+
+  coord_flip()+ 
+  theme_bw()+
+  ylab("distance to TSS, log10")
+```
+
+```{r}
+ggplot(all_promoter, aes(y=log10(distance))) +
+  geom_histogram(aes(x = (..count..)/sum(..count..)),bins=75)+
+  coord_flip()+ 
+  theme_bw()+
+  ylab("distance to TSS, log10")
+```
+
+```{r}
+H3K4me3 <- read.delim("Gene_H3K4me3.bed", header=F) %>% select(2,8)
+
+colnames(H3K4me3) <- c("peak_feature", "distance")
+
+H3K4me3$distance <- (abs(H3K4me3$distance)/1000)+1
+
+H3K4me3$distance <- round(H3K4me3$distance,digits=3)
+```
+
+```{r}
+ggplot(H3K4me3, aes(y=log10(distance))) +
+  geom_freqpoly(bins=50)+
+  coord_flip()+ 
+  theme_bw()+
+  ylab("distance to TSS, log10")
+```
+
+```{r}
+ggplot(H3K4me3, aes(y=log10(distance))) +
+  geom_histogram(aes(x = (..count..)/sum(..count..)),bins=75)+
+  coord_flip()+ 
+  theme_bw()+
+  ylab("distance to TSS, log10")
+```
+
+
+
+```{r}
+H3K4me3woAc <- read.delim("E:/MS/Project_Work/Data/Factors_Markers/Genes_H3K4me3woAc.bed", header=F) %>% select(2,8)
+
+colnames(H3K4me3woAc) <- c("peak_feature", "distance")
+
+H3K4me3woAc$distance <- (abs(H3K4me3woAc$distance)/1000)+1
+
+H3K4me3woAc$distance <- round(H3K4me3woAc$distance,digits=3)
+```
+
+```{r}
+ggplot(H3K4me3woAc, aes(y=log10(distance))) +
+  geom_freqpoly(bins=50)+
+  coord_flip()+ 
+  theme_bw()+
+  ylab("distance to TSS, log10")
+```
+
+```{r}
+H3K27Acwome3 <- read.delim("E:/MS/Project_Work/Data/Factors_Markers/Genes_H3K27Acwome3.bed", header=F) %>% select(2,8)
+
+colnames(H3K27Acwome3) <- c("peak_feature", "distance")
+
+H3K27Acwome3$distance <- (abs(H3K27Acwome3$distance)/1000)
+
+H3K27Acwome3_not1 <- H3K27Acwome3 %>% filter(!distance==0)
+
+H3K27Acwome3_1 <- H3K27Acwome3 %>% filter(distance==1)
+
+H3K27Acwome3$distance <- round(H3K27Acwome3$distance,digits=3)
+```
+
+```{r}
+ggplot(H3K27Acwome3_not1, aes(y=(distance))) +
+  geom_freqpoly(bins=20)+
+  scale_y_continuous(trans= "log10", breaks = c(0.01, 0.1, 1, 10, 100))+
+  coord_flip()+ 
+  theme_bw()+
+  ylab("distance to TSS in kb")
+```
+
+
+```{r}
+H3K27Ac <- read.delim("Gene_H3K27Ac.bed", header=F) %>% select(2,8)
+
+colnames(H3K4me3) <- c("peak_feature", "distance")
+
+H3K4me3$distance <- (abs(H3K4me3$distance)/1000)+1
+
+H3K4me3$distance <- round(H3K4me3$distance,digits=3)
+```
+
+```{r}
+ggplot(H3K27Ac, aes(y=log10(distance))) +
+  geom_freqpoly(bins=50)+
+  coord_flip()+ 
+  theme_bw()+
+  ylab("distance to TSS, log10")
+```
+
+```{r}
+ggplot(H3K27Ac, aes(y=log10(distance))) +
+  geom_histogram(aes(x = (..count..)/sum(..count..)),bins=75)+
+  coord_flip()+ 
+  theme_bw()+
+  ylab("distance to TSS, log10")
+```
